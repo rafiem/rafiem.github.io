@@ -39,7 +39,7 @@ Appending ```"="``` to the end of the body request is to test if we can make a r
 
 ![Modified Request](/assets/media/example_request_change_picture.png)
 <br><br><br>
-<img src="/assets/media/shocked_bounty.gif" class="media_center" style="width: 50%; height: 50%" />
+<img src="/assets/media/cat_shock.jpeg" class="media_center"/>
 <h4 align="center"><b>And it works !</b></h4>
 <br><br>
 

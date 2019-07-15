@@ -43,7 +43,7 @@ I’m thinking if we can somehow perform a CSRF attack to the &lt;code class=&qu
 
 &lt;p&gt;&lt;img src=&quot;/assets/media/example_request_change_picture.png&quot; alt=&quot;Modified Request&quot; /&gt;
 &lt;br /&gt;&lt;br /&gt;&lt;br /&gt;
-&lt;img src=&quot;/assets/media/shocked_bounty.gif&quot; class=&quot;media_center&quot; style=&quot;width: 50%; height: 50%&quot; /&gt;&lt;/p&gt;
+&lt;img src=&quot;/assets/media/cat_shock.jpeg&quot; class=&quot;media_center&quot; /&gt;&lt;/p&gt;
 &lt;h4 align=&quot;center&quot;&gt;&lt;b&gt;And it works !&lt;/b&gt;&lt;/h4&gt;
 &lt;p&gt;&lt;br /&gt;&lt;br /&gt;&lt;/p&gt;
 
@@ -120,7 +120,7 @@ Happy Bug Hunting !&lt;/p&gt;
 &lt;/table&gt;
 
 </description>
-				<pubDate>Mon, 25 Mar 2019 00:00:00 +0700</pubDate>
+				<pubDate>Mon, 15 Jul 2019 00:00:00 +0700</pubDate>
 				<link>/bugbounty/tokopedia/site-wide-csrf-graphql/</link>
 				<guid isPermaLink="true">/bugbounty/tokopedia/site-wide-csrf-graphql/</guid>
 			</item>
