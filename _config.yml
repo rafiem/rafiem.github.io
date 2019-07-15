@@ -1,0 +1,40 @@
+# visit https://github.com/mojombo/jekyll/wiki/Configuration for more settings
+
+paginate: 7 # pagination based on number of posts
+paginate_path: "page:num"
+exclude: ["README.md"] # files to exclude
+highlighter: rouge
+markdown: kramdown
+disqus: 
+google_analytics: 
+title: Yeraisci
+
+defaults:
+  -
+    scope:
+      path: "" # empty string for all files
+    values:
+      title: Yeraisci Blog
+
+description: Stylish Jekyll Theme
+author:
+  name: Rafie Muhammad
+  email: rafiemuhammad07@gmail.com
+  github: rafiem
+  twitter: rafiem777
+  linkedin: rafiemuhammad
+  hackerone: rafiem
+  bio: Try Hard Learner
+  email_md5: 059f50a149f4ac584e791d2963a85274
+
+rss_path: feed.xml
+categories_path: categories.html
+tags_path: tags.html
+
+# set it as url of an image
+# sidebar_background_image: https://www.dropbox.com/s/g9h23zrycedxtk5/sky.png?raw=1
+
+BASE_PATH:
+
+plugins:
+  - jekyll-paginate

